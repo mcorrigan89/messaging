@@ -33,7 +33,7 @@ func newMessagingProtoUrlServer(cfg *config.Config, logger *zerolog.Logger, wg *
 
 func (s *MessagingServerV1) SendVerificationEmail(ctx context.Context, req *connect.Request[messagingv1.SendVerificationEmailRequest]) (*connect.Response[messagingv1.SendVerificationEmailResponse], error) {
 	userId := req.Msg.UserId
-	link := req.Msg.Link
+	link := req.Msg.VerificationLink
 
 	userUUID, err := uuid.Parse(userId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *MessagingServerV1) SendVerificationEmail(ctx context.Context, req *conn
 	}
 
 	res := connect.NewResponse(&messagingv1.SendVerificationEmailResponse{
-		Status: *emailStatus,
+		Message: *emailStatus,
 	})
 	res.Header().Set("Messaging-Version", "v1")
 	return res, nil
@@ -65,7 +65,7 @@ func (s *MessagingServerV1) SendVerificationEmail(ctx context.Context, req *conn
 
 func (s *MessagingServerV1) SendPasswordResetEmail(ctx context.Context, req *connect.Request[messagingv1.SendPasswordResetEmailRequest]) (*connect.Response[messagingv1.SendPasswordResetEmailResponse], error) {
 	userId := req.Msg.UserId
-	link := req.Msg.Link
+	link := req.Msg.PasswordResetLink
 
 	userUUID, err := uuid.Parse(userId)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *MessagingServerV1) SendPasswordResetEmail(ctx context.Context, req *con
 	}
 
 	res := connect.NewResponse(&messagingv1.SendPasswordResetEmailResponse{
-		Status: *emailStatus,
+		Message: *emailStatus,
 	})
 	res.Header().Set("Messaging-Version", "v1")
 	return res, nil
