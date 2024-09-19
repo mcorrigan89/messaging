@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/mcorrigan89/messaging/internal/api/serviceapis/identity/v1"
+	v1 "github.com/mcorrigan89/messaging/gen/serviceapis/identity/v1"
 	http "net/http"
 	strings "strings"
 )

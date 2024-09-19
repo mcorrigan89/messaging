@@ -7,17 +7,18 @@ import (
 	"github.com/mcorrigan89/messaging/internal/api"
 	"github.com/mcorrigan89/messaging/internal/config"
 	"github.com/mcorrigan89/messaging/internal/repositories"
+	"github.com/mcorrigan89/messaging/internal/serviceapis"
 	"github.com/mcorrigan89/messaging/internal/services"
 	"github.com/rs/zerolog"
 )
 
 type application struct {
-	config         config.Config
-	wg             *sync.WaitGroup
-	logger         *zerolog.Logger
-	services       *services.Services
-	protoServer    *api.ProtoServer
-	identityClient *api.IdentityClientV1
+	config            config.Config
+	wg                *sync.WaitGroup
+	logger            *zerolog.Logger
+	services          *services.Services
+	protoServer       *api.ProtoServer
+	serviceApiClients *serviceapis.ServiceApiClients
 }
 
 func main() {
@@ -37,17 +38,17 @@ func main() {
 	wg := sync.WaitGroup{}
 
 	repositories := repositories.NewRepositories(db, &logger, &wg)
-	services := services.NewServices(&repositories, &cfg, &logger, &wg)
+	serviceApiClients := serviceapis.NewServiceApiClients(&cfg, &logger, &wg)
+	services := services.NewServices(&repositories, serviceApiClients, &cfg, &logger, &wg)
 	protoServer := api.NewProtoServer(&cfg, &logger, &wg, &services)
-	identityClient := api.NewIdentityClientV1(&cfg, &logger, &wg)
 
 	app := &application{
-		wg:             &wg,
-		config:         cfg,
-		logger:         &logger,
-		services:       &services,
-		protoServer:    protoServer,
-		identityClient: identityClient,
+		wg:                &wg,
+		config:            cfg,
+		logger:            &logger,
+		services:          &services,
+		serviceApiClients: serviceApiClients,
+		protoServer:       protoServer,
 	}
 
 	err = app.serve()

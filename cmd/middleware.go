@@ -27,7 +27,7 @@ func (app *application) contextBuilder(next http.Handler) http.Handler {
 
 			ctx = usercontext.ContextSetSession(ctx, sessionToken)
 
-			user, err := app.identityClient.GetUserBySessionToken(ctx, sessionToken)
+			user, err := app.serviceApiClients.Identity.GetUserBySessionToken(ctx, sessionToken)
 			if err != nil {
 				app.logger.Err(err).Ctx(ctx).Msg("Error getting user by session token")
 			} else {

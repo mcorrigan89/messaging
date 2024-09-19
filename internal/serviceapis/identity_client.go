@@ -1,4 +1,4 @@
-package api
+package serviceapis
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	identityv1 "github.com/mcorrigan89/messaging/internal/api/serviceapis/identity/v1"
-	identityv1connect "github.com/mcorrigan89/messaging/internal/api/serviceapis/identity/v1/identityv1connect"
+	identityv1 "github.com/mcorrigan89/messaging/gen/serviceapis/identity/v1"
+	identityv1connect "github.com/mcorrigan89/messaging/gen/serviceapis/identity/v1/identityv1connect"
 	"github.com/mcorrigan89/messaging/internal/entities"
 	"github.com/mcorrigan89/messaging/internal/usercontext"
 
@@ -48,6 +48,33 @@ func (c *IdentityClientV1) GetUserBySessionToken(ctx context.Context, token stri
 	response, err := c.client.GetUserBySessionToken(ctx, req)
 	if err != nil {
 		c.logger.Err(err).Msg("Error getting user by session token")
+		return nil, err
+	}
+	uuid, err := uuid.Parse(response.Msg.User.Id)
+	if err != nil {
+		c.logger.Err(err).Msg("Error parsing user ID")
+		return nil, err
+	}
+	userEntity := entities.NewUserEntity(entities.NewUserEntityArgs{
+		ID:         uuid,
+		GivenName:  response.Msg.User.GivenName,
+		FamilyName: response.Msg.User.FamilyName,
+		Email:      response.Msg.User.Email,
+	})
+
+	return userEntity, nil
+}
+
+func (c *IdentityClientV1) GetUserByID(ctx context.Context, userID uuid.UUID) (*entities.User, error) {
+	sessionToken := usercontext.ContextGetSession(ctx)
+	req := connect.NewRequest(&identityv1.GetUserByIdRequest{
+		Id: userID.String(),
+	})
+	req.Header().Set("x-session-token", sessionToken)
+
+	response, err := c.client.GetUserById(ctx, req)
+	if err != nil {
+		c.logger.Err(err).Msg("Error getting user by ID")
 		return nil, err
 	}
 	uuid, err := uuid.Parse(response.Msg.User.Id)
