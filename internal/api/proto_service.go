@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"connectrpc.com/grpcreflect"
-	messagingv1connect "github.com/mcorrigan89/messaging/internal/api/serviceapis/messaging/v1/messagingv1connect"
+	messagingv1connect "github.com/mcorrigan89/messaging/gen/serviceapis/messaging/v1/messagingv1connect"
 	"github.com/mcorrigan89/messaging/internal/config"
 	"github.com/mcorrigan89/messaging/internal/services"
 	"github.com/rs/zerolog"
@@ -35,7 +35,7 @@ func NewProtoServer(cfg *config.Config, logger *zerolog.Logger, wg *sync.WaitGro
 func (s *ProtoServer) Handle(r *http.ServeMux) {
 
 	reflector := grpcreflect.NewStaticReflector(
-		"serviceapis.messaging.v1.EmailService",
+		"serviceapis.messaging.v1.IdentityMessagingService",
 	)
 
 	reflectPath, reflectHandler := grpcreflect.NewHandlerV1(reflector)
@@ -43,6 +43,6 @@ func (s *ProtoServer) Handle(r *http.ServeMux) {
 	reflectPathAlpha, reflectHandlerAlpha := grpcreflect.NewHandlerV1Alpha(reflector)
 	r.Handle(reflectPathAlpha, reflectHandlerAlpha)
 
-	messagingV1Path, messagingV1Handle := messagingv1connect.NewEmailServiceHandler(s.messagingV1Server)
+	messagingV1Path, messagingV1Handle := messagingv1connect.NewIdentityMessagingServiceHandler(s.messagingV1Server)
 	r.Handle(messagingV1Path, messagingV1Handle)
 }

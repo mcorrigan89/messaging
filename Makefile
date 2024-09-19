@@ -17,6 +17,10 @@ codegen:
 	buf lint
 	buf generate --path serviceapis/serviceapis
 
+.PHONY: template	
+template:
+	~/go/bin/templ generate
+
 .PHONY: models
 models:
 	pg_dump --schema-only messaging > schema.sql

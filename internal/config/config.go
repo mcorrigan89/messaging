@@ -27,6 +27,7 @@ type Config struct {
 	Mailgun struct {
 		Domain string
 		APIKey string
+		Email  string
 	}
 }
 
@@ -91,5 +92,12 @@ func LoadConfig(cfg *Config) {
 	}
 
 	cfg.Mailgun.APIKey = mailgun_api_key
+
+	mailgun_email := os.Getenv("MAILGUN_EMAIL")
+	if mailgun_email == "" {
+		log.Fatalf("MAILGUN_EMAIL not available in .env")
+	}
+
+	cfg.Mailgun.Email = mailgun_email
 
 }

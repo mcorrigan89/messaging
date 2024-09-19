@@ -1,0 +1,16 @@
+package templates
+
+templ VerificationEmail(link string) {
+	<style type="text/css">
+		p {
+			font-family: sans-serif;
+		}
+	</style>
+	<div>
+		<p>
+			Hello,
+			Thanks for signing up! To get access to your account please verify your email address by clicking the link below.
+		</p>
+		<a class="button" href={ templ.SafeURL(link) }>Click me!</a>
+	</div>
+}
