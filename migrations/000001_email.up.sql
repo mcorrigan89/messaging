@@ -1,0 +1,15 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS citext;
+
+CREATE TABLE IF NOT EXISTS email (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  message_id TEXT NOT NULL,
+  from_email citext NOT NULL,
+  to_email citext NOT NULL,
+  subject TEXT NOT NULL,
+  content TEXT NOT NULL,
+  sent_for TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  version integer NOT NULL DEFAULT 1
+);
