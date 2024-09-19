@@ -43,6 +43,6 @@ func (s *ProtoServer) Handle(r *http.ServeMux) {
 	reflectPathAlpha, reflectHandlerAlpha := grpcreflect.NewHandlerV1Alpha(reflector)
 	r.Handle(reflectPathAlpha, reflectHandlerAlpha)
 
-	messagingV1Path, messagingV1Handle := messagingv1connect.NewEmailServiceHandler(s.messagingV1Server)
+	messagingV1Path, messagingV1Handle := messagingv1connect.NewIdentityMessagingServiceHandler(s.messagingV1Server)
 	r.Handle(messagingV1Path, messagingV1Handle)
 }

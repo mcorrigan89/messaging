@@ -5,34 +5,35 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mailgun/mailgun-go/v4"
+	"github.com/mcorrigan89/messaging/internal/api"
 	"github.com/mcorrigan89/messaging/internal/repositories"
 	"github.com/mcorrigan89/messaging/internal/templates"
 )
 
-type EmailService struct {
-	utils           ServicesUtils
-	mailgun         *mailgun.MailgunImpl
-	emailRepository *repositories.EmailRepository
+type MessageService struct {
+	utils         ServicesUtils
+	mailgun       *mailgun.MailgunImpl
+	idenityClient *api.IdentityClientV1
+	emailService  *EmailService
 }
 
-func NewEmailService(utils ServicesUtils, emailRepo *repositories.EmailRepository) *EmailService {
+func NewMessageService(utils ServicesUtils, emailRepo *repositories.EmailRepository) *MessageService {
 	mailgun := mailgun.NewMailgun(utils.config.Mailgun.Domain, utils.config.Mailgun.APIKey)
-	return &EmailService{
+	return &MessageService{
 		utils:           utils,
 		mailgun:         mailgun,
 		emailRepository: emailRepo,
 	}
 }
 
-type SendEmailArgs struct {
-	FromEmail string
-	ToEmail   string
-	Subject   string
-	Body      string
+type SendVerificationEmailArgs struct {
+	UserID uuid.UUID
+	Link   string
 }
 
-func (service *EmailService) SendEmail(ctx context.Context, args SendEmailArgs) (*string, error) {
+func (service *MessageService) SendVerificationEmail(ctx context.Context, args SendVerificationEmailArgs) (*string, error) {
 	service.utils.logger.Info().Ctx(ctx).Str("fromEmail", args.FromEmail).Str("toEmail", args.ToEmail).Str("subject", args.Subject).Msg("Sending Email")
 	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
 	defer cancel()
