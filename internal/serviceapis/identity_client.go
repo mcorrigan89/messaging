@@ -27,7 +27,7 @@ type IdentityClientV1 struct {
 func NewIdentityClientV1(cfg *config.Config, logger *zerolog.Logger, wg *sync.WaitGroup) *IdentityClientV1 {
 	client := identityv1connect.NewIdentityServiceClient(
 		http.DefaultClient,
-		"http://localhost:4000",
+		cfg.ServiceApis.Idenitity.URL,
 	)
 	return &IdentityClientV1{
 		config: cfg,
